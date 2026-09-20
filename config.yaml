@@ -41,7 +41,7 @@ ai:
   # fallback if the primary provider's call fails (needs its API key set).
 
 storage:
-  destination: local          # saves approved photos to ./approved_images on this
+  destination: google_drive         # saves approved photos to ./approved_images on this
                                # computer -- no Google account/OAuth setup needed.
                                # Switch back to "google_drive" later once you've
                                # confirmed the folder ID below is shared with the
