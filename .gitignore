@@ -127,6 +127,4 @@ outputs/
 generated_images/
 processed_images/
 
-config.yaml
-config.yaml.example
 .env.example

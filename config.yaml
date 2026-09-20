@@ -1,0 +1,67 @@
+# Copy to config.yaml to customize (or edit via the Settings page in the
+# dashboard, which writes to this same file). Secrets (API keys) NEVER go
+# here -- they live in .env only. See .env.example.
+image:
+  width: 1800
+  height: 1200
+  max_size_mb: 10
+
+search:
+  sources: [pexels, unsplash, pixabay, foodish, kaggle]
+  candidates_per_source: 1
+  max_retries: 3
+
+quality:
+  min_resolution_width: 900
+  min_resolution_height: 600
+  blur_threshold: 80
+  ideal_coverage_min: 0.80    # food should fill 80-90% of the frame
+  ideal_coverage_max: 0.90
+  coverage_floor: 0.15        # below this: food barely visible -> hard fail
+  coverage_ceiling: 0.97      # above this: zoomed in / no context left -> hard fail
+  border_cutoff_fail_ratio: 0.55  # this much of the border is food -> likely cut off
+
+scoring:
+  ai_weight: 0.50
+  technical_weight: 0.25
+  composition_weight: 0.15
+  resolution_weight: 0.10
+
+decision:
+  auto_approve: 80      # score >= 80 -> Auto Approved
+  human_review_min: 65  # 65 <= score < 80 -> Human Review; below 65 -> Rejected
+
+ai:
+  enabled: true                # turned on -- you have GEMINI_API_KEY and GROQ_API_KEY set
+  provider: groq                # primary provider: "gemini" or "groq" -- Groq first
+                                 # since your Gemini free-tier calls are limited
+  model: gemini-flash-latest     # used as the fallback provider's model
+  groq_model: qwen/qwen3.8-27b   # Groq's current vision-capable model
+  # Whichever provider is NOT "provider" above is used automatically as a
+  # fallback if the primary provider's call fails (needs its API key set).
+
+storage:
+  destination: local          # saves approved photos to ./approved_images on this
+                               # computer -- no Google account/OAuth setup needed.
+                               # Switch back to "google_drive" later once you've
+                               # confirmed the folder ID below is shared with the
+                               # same Google account you log in with.
+  drive_folder_id: "1oMyowJwce6RUFYdhjGkpmNb9tWD57Pea"   # kept here for when you switch back
+  # Optional: a SEPARATE Drive folder ID to keep an audit trail of rejected
+  # items' photos (never seen in the main approved folder). Leave blank to
+  # store rejected photos in the SAME folder as above, named
+  # "Rejected_<item name>.jpg" so they're easy to tell apart.
+  rejected_drive_folder_id: ""
+
+review:
+  # How many of the best-scoring candidates a worker sees per item on the
+  # Human Review page. All candidates are still scored and logged to the
+  # database; only this many are ever kept as local image files (the rest
+  # are deleted right away) so unused disk space is never wasted.
+  top_n: 3
+
+duplicate:
+  phash_distance_threshold: 6
+
+logging:
+  level: INFO

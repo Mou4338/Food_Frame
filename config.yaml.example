@@ -1,0 +1,54 @@
+# Copy to config.yaml to customize (or edit via the Settings page in the
+# dashboard, which writes to this same file). Secrets (API keys) NEVER go
+# here -- they live in .env only. See .env.example.
+image:
+  width: 1800
+  height: 1200
+  max_size_mb: 10
+
+search:
+  sources: [pexels, unsplash, pixabay, foodish, kaggle]
+  candidates_per_source: 1
+  max_retries: 3
+
+quality:
+  min_resolution_width: 900
+  min_resolution_height: 600
+  blur_threshold: 80
+  ideal_coverage_min: 0.80    # food should fill 80-90% of the frame
+  ideal_coverage_max: 0.90
+  coverage_floor: 0.15        # below this: food barely visible -> hard fail
+  coverage_ceiling: 0.97      # above this: zoomed in / no context left -> hard fail
+  border_cutoff_fail_ratio: 0.55  # this much of the border is food -> likely cut off
+
+scoring:
+  ai_weight: 0.50
+  technical_weight: 0.25
+  composition_weight: 0.15
+  resolution_weight: 0.10
+
+decision:
+  auto_approve: 80      # score >= 80 -> Auto Approved
+  human_review_min: 65  # 65 <= score < 80 -> Human Review; below 65 -> Rejected
+
+ai:
+  enabled: false
+  provider: gemini             # primary provider: "gemini" or "groq"
+  model: gemini-flash-latest
+  groq_model: openai/gpt-oss-120b
+  # Whichever provider is NOT "provider" above is used automatically as a
+  # fallback if the primary provider's call fails (needs its API key set).
+
+storage:
+  destination: google_drive   # requires drive_folder_id below to be set
+  drive_folder_id: ""
+  rejected_drive_folder_id: ""   # optional: separate Drive folder for rejected-item audit photos
+
+review:
+  top_n: 3   # how many best-scoring candidates a human reviewer sees per item
+
+duplicate:
+  phash_distance_threshold: 6
+
+logging:
+  level: INFO
