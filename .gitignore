@@ -1,0 +1,132 @@
+# ==============================
+# Python
+# ==============================
+.venv/
+venv/
+env/
+ENV/
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# ==============================
+# Environment / Secrets
+# ==============================
+.env
+.env.*
+!.env.example
+!.env.template
+
+# API keys / tokens
+*.key
+*.pem
+*.token
+*token*
+*secret*
+*secrets*
+
+# ==============================
+# Google OAuth / Credentials
+# ==============================
+client_secret*.json
+client-secrets*.json
+credentials*.json
+token.json
+token_*.json
+oauth*.json
+service-account*.json
+*-service-account*.json
+
+# Google application credentials
+application_default_credentials.json
+
+# ==============================
+# Streamlit Secrets
+# ==============================
+.streamlit/secrets.toml
+.streamlit/secrets/*
+secrets.toml
+
+# ==============================
+# Certificates / Private Keys
+# ==============================
+*.crt
+*.cer
+*.p12
+*.pfx
+*.jks
+*.keystore
+*.private
+*.priv
+*.rsa
+
+# ==============================
+# Node / Frontend
+# ==============================
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+
+# Environment files for frontend
+frontend/.env
+frontend/.env.*
+!frontend/.env.example
+
+# ==============================
+# Build / Cache
+# ==============================
+dist/
+build/
+.cache/
+.vite/
+.next/
+coverage/
+
+# ==============================
+# Logs
+# ==============================
+*.log
+logs/
+
+# ==============================
+# Database / Local Data
+# ==============================
+*.db
+*.sqlite
+*.sqlite3
+
+# ==============================
+# IDE
+# ==============================
+.vscode/
+.idea/
+
+# ==============================
+# OS
+# ==============================
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ==============================
+# Temporary Files
+# ==============================
+*.tmp
+*.temp
+*.bak
+*.swp
+
+# ==============================
+# Uploaded / Generated Images
+# ==============================
+uploads/
+output/
+outputs/
+generated_images/
+processed_images/
+
+config.yaml
+config.yaml.example
+.env.example
