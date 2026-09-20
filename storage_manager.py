@@ -45,6 +45,12 @@ def get_uploader(cfg: dict, secrets, kind: str = "approved"):
             "Set it on the Settings page or in config.yaml."
         )
 
+    # Headless login (Streamlit secrets [drive_token], e.g. on a deployed
+    # app with no browser available) takes priority when configured;
+    # otherwise fall back to the local client_secret.json + one-time
+    # browser login flow.
+    if getattr(secrets, "DRIVE_TOKEN_INFO", None):
+        return DriveUploader.from_token_info(secrets.DRIVE_TOKEN_INFO, folder_id)
     return DriveUploader(secrets.GOOGLE_OAUTH_CLIENT_FILE, folder_id, secrets.GOOGLE_OAUTH_TOKEN_FILE)
 
 

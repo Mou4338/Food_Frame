@@ -4,12 +4,40 @@ Loads defaults, then overrides from config.yaml (if present), then from
 .env / environment variables (highest priority, good for secrets like API
 keys). The Settings dashboard page can also write changes back into
 config.yaml so they persist across runs without editing files by hand.
+
+Deployed apps (e.g. Streamlit Community Cloud) have no .env file and no
+local disk to keep client_secret.json/token.json on. In that case, secrets
+are instead entered once in Streamlit's own Secrets manager (Settings ->
+Secrets on the app's dashboard), in the same flat KEY = "value" format as
+a .env file, plus one nested [drive_token] table for headless Google Drive
+login (see generate_drive_token.py for how to produce it). The block below
+copies anything found there into the normal environment variables, so
+every os.getenv() call below -- and everything the background run_batch.py
+subprocess reads via its inherited environment -- picks it up exactly the
+same way it would pick up a real .env file. A real .env value already set
+always wins, so local development is unaffected.
 """
+import json
 import os
 import yaml
 from dotenv import load_dotenv
 
 load_dotenv()
+
+try:
+    import streamlit as st
+    _st_secrets = st.secrets
+except Exception:
+    _st_secrets = None
+
+if _st_secrets:
+    for _k, _v in _st_secrets.items():
+        if _k == "drive_token":
+            continue  # nested table, handled separately below
+        if isinstance(_v, (str, int, float)) and os.getenv(_k) is None:
+            os.environ[_k] = str(_v)
+    if "drive_token" in _st_secrets and os.getenv("DRIVE_TOKEN_JSON") is None:
+        os.environ["DRIVE_TOKEN_JSON"] = json.dumps(dict(_st_secrets["drive_token"]))
 
 DEFAULT_CONFIG = {
     "image": {"width": 1800, "height": 1200, "max_size_mb": 10},
@@ -96,6 +124,14 @@ class Secrets:
 
     GOOGLE_OAUTH_CLIENT_FILE = os.getenv("GOOGLE_OAUTH_CLIENT_FILE", "./client_secret.json")
     GOOGLE_OAUTH_TOKEN_FILE = os.getenv("GOOGLE_OAUTH_TOKEN_FILE", "./token.json")
+
+    # Populated only when a [drive_token] table was supplied via Streamlit
+    # secrets (or a DRIVE_TOKEN_JSON env var directly) -- lets Drive log in
+    # headlessly using a saved refresh_token, with no client_secret.json
+    # file and no browser. None when not configured, in which case the
+    # file + one-time-browser flow above is used instead.
+    _drive_token_json = os.getenv("DRIVE_TOKEN_JSON", "")
+    DRIVE_TOKEN_INFO = json.loads(_drive_token_json) if _drive_token_json else None
 
     EXCEL_PATH = os.getenv("EXCEL_PATH", "./food_items.xlsx")
     SHEET_NAME = os.getenv("SHEET_NAME", "Sheet1")

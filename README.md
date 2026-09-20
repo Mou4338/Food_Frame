@@ -220,6 +220,39 @@ menu file is updated with a Status column and a link to each photo.
 | `config.py` / `config.yaml.example` | All the adjustable settings |
 | `.env.example` | Where your API keys and secrets go (copy to `.env`) |
 
+## Deploying (e.g. Streamlit Community Cloud)
+
+A deployed app has no `.env` file, no local disk to keep `client_secret.json`
+or `token.json` on between restarts, and no browser to complete an
+interactive Google login. Use Streamlit's own **Secrets** manager instead
+(on Streamlit Community Cloud: your app -> Settings -> Secrets):
+
+1. Paste in the same keys you'd normally put in `.env`, flat, e.g.:
+   ```toml
+   PEXELS_API_KEY = "..."
+   UNSPLASH_ACCESS_KEY = "..."
+   PIXABAY_API_KEY = "..."
+   GEMINI_API_KEY = "..."
+   GROQ_API_KEY = "..."
+   ```
+   These are copied into the app's environment automatically at startup —
+   no code changes needed, and everything (including the background
+   `run_batch.py` process the dashboard launches) picks them up exactly
+   like it would from a real `.env`.
+2. For Google Drive, run this **once, locally, on your own laptop** (never
+   on the server — it needs a real browser):
+   ```bash
+   python generate_drive_token.py client_secret.json
+   ```
+   Log in with the Google account that owns (or has Editor access to) your
+   Drive folder. It prints a ready-to-paste `[drive_token]` block — paste
+   that into the same Secrets manager, under your other keys. From then on,
+   Drive logs in headlessly using that saved refresh token; the app never
+   needs `client_secret.json` or a browser again.
+3. Set `storage.drive_folder_id` in `config.yaml` (or the Settings page) to
+   a folder that Google account can actually see — open the folder's own
+   link while logged into that account to confirm before deploying.
+
 ## Troubleshooting
 
 - **"Could not find a column named ..."** — double-check the food-name

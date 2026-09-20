@@ -111,6 +111,7 @@ class DriveUploader:
                     "generate_drive_token.py locally and update the secret."
                 )
         self.service = build("drive", "v3", credentials=creds)
+        self._verify_folder()
         return self
 
     def upload_image(self, filename: str, image_bytes: bytes) -> str:
